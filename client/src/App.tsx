@@ -55,7 +55,7 @@ function Petal({ delay, left, duration }: { delay: number; left: number; duratio
 }
 
 // ── Replace the src below with your actual image URL or local path ──
-const GIRL_IMAGE_SRC = "/public/1.gif";
+const GIRL_IMAGE_SRC = "/1.gif";
 
 function AnimeGirl() {
   return (
