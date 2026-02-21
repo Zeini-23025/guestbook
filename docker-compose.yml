@@ -1,17 +1,18 @@
 version: "3.9"
 
 services:
-  mongodb:
-    image: mongo:7
-    container_name: mongodb
+  postgres:
+    image: postgres:15
+    container_name: postgres
     restart: always
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: mydatabase
     volumes:
-      - mongo-data:/data/db
+      - pg-data:/var/lib/postgresql/data
 
 volumes:
-  mongo-data:
+  pg-data:
