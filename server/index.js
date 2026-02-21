@@ -15,7 +15,7 @@ const pool = new Pool({
 });
 
 // ---------------------------
-// Create users table if not exists
+// Create visitors table if not exists
 // ---------------------------
 (async () => {
   const client = await pool.connect();
