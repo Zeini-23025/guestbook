@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Setup Node
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Install frontend
+      - name: Install Client
+        run: |
+          cd client
+          npm install
+
+      - name: Build Client
+        run: |
+          cd client
+          npm run build
+
+      # Install backend
+      - name: Install Server
+        run: |
+          cd server
+          npm install
+
+      - name: Start Server Test
+        run: |
+          cd server
+          node index.js &
+          sleep 5
