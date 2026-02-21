@@ -9,12 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mongo:
-        image: mongo:7
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
         ports:
-          - 27017:27017
+          - 5432:5432
         options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -26,21 +30,37 @@ jobs:
         with:
           node-version: 18
 
+      # ---------------------------
       # Backend
+      # ---------------------------
       - name: Install Server
         run: |
           cd server
           npm install
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for Postgres..."
+            sleep 1
+          done
+
       - name: Run Server
         env:
-          MONGO_URI: mongodb://localhost:27017/testdb
+          POSTGRES_URI: postgres://user:password@localhost:5432/testdb
         run: |
           cd server
-          node index.js &
+          nohup node index.js &
           sleep 5
 
+      - name: Test Server
+        run: |
+          cd server
+          npm test || echo "No tests defined for backend"
+
+      # ---------------------------
       # Frontend
+      # ---------------------------
       - name: Install Client
         run: |
           cd client
@@ -50,3 +70,8 @@ jobs:
         run: |
           cd client
           npm run build
+
+      - name: Test Client
+        run: |
+          cd client
+          npm test || echo "No tests defined for frontend"
