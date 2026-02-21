@@ -21,13 +21,13 @@ const pool = new Pool({
   const client = await pool.connect();
   try {
     await client.query(`
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE IF NOT EXISTS visitors (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE
+        country VARCHAR(255) NOT NULL
       )
     `);
-    console.log("Users table ready ✅");
+    console.log("Tables ready :3");
   } catch (err) {
     console.error("Error creating table:", err);
   } finally {
@@ -36,42 +36,42 @@ const pool = new Pool({
 })();
 
 // ---------------------------
-// POST /api/users
+// POST /api/visitors
 // ---------------------------
-app.post("/api/users", async (req, res) => {
-  const { name, email } = req.body;
+app.post("/api/visitors", async (req, res) => {
+  const { name, country } = req.body;
   try {
     const { rows } = await pool.query(
-      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
-      [name, email]
+      "INSERT INTO visitors (name, country) VALUES ($1, $2) RETURNING *",
+      [name, country]
     );
     res.json(rows[0]);
   } catch (err) {
-    console.error("POST /api/users error:", err);
-    res.status(500).json({ error: "Error saving user" });
+    console.error("POST /api/visitors error:", err);
+    res.status(500).json({ error: "Error saving visitor :3" });
   }
 });
 
 // ---------------------------
-// GET /api/users
+// GET /api/visitors
 // ---------------------------
-app.get("/api/users", async (_req, res) => {
+app.get("/api/visitors", async (_req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM users ORDER BY id DESC");
+    const { rows } = await pool.query("SELECT * FROM visitors ORDER BY id DESC");
     res.json(rows);
   } catch (err) {
-    console.error("GET /api/users error:", err);
-    res.status(500).json({ error: "Error fetching users" });
+    console.error("GET /api/visitors error:", err);
+    res.status(500).json({ error: "Error fetching visitors" });
   }
 });
 
 // ---------------------------
 // Test route
 // ---------------------------
-app.get("/", (_req, res) => res.send("API Running 🚀"));
+app.get("/", (_req, res) => res.send("API Running onii-chan :3"));
 
 // ---------------------------
 // Start server
 // ---------------------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT} :3`));
