@@ -8,15 +8,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
 
-      # Setup Node
       - uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # Install frontend
+      # Backend
+      - name: Install Server
+        run: |
+          cd server
+          npm install
+
+      - name: Run Server
+        env:
+          MONGO_URI: mongodb://localhost:27017/testdb
+        run: |
+          cd server
+          node index.js &
+          sleep 5
+
+      # Frontend
       - name: Install Client
         run: |
           cd client
@@ -26,15 +50,3 @@ jobs:
         run: |
           cd client
           npm run build
-
-      # Install backend
-      - name: Install Server
-        run: |
-          cd server
-          npm install
-
-      - name: Start Server Test
-        run: |
-          cd server
-          node index.js &
-          sleep 5
